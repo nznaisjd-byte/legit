@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>My Location</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #0f0f0f;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .box {
+    background: #1a1a1a;
+    padding: 25px;
+    border-radius: 12px;
+    width: 300px;
+    text-align: center;
+    box-shadow: 0 0 25px rgba(0,255,255,0.2);
+  }
+
+  button {
+    background: #00ffff;
+    color: black;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+  }
+
+  button:hover {
+    opacity: 0.85;
+  }
+
+  p {
+    margin-top: 15px;
+    white-space: pre-line;
+  }
+</style>
+</head>
+
+<body>
+<div class="box">
+  <h2>
+  <button onclick="getLocation()"> Click Here to Generate Robux
+  <p id="result">Waiting for permission…</p>
+</div>
+
+<script>
+function getLocation() {
+  if (!navigator.geolocation) {
+    document.getElementById("result").innerText = "Geolocation not supported.";
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const lat = pos.coords.latitude;
+    const lon = pos.coords.longitude;
+
+    // OpenStreetMap reverse geocoding (no account needed)
+    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+
+    const res = await fetch(url);
+    const data = await res.json();
+
+    const city =
+      data.address.city ||
+      data.address.town ||
+      data.address.village ||
+      "Unknown";
+
+    const region = data.address.state || "Unknown";
+    const country = data.address.country || "Unknown";
+
+    document.getElementById("result").innerText =
+      `City: ${city}\nRegion: ${region}\nCountry: ${country}`;
+  },
+  () => {
+    document.getElementById("result").innerText = "Permission denied.";
+  });
+}
+</script>
+</body>
+</html>
